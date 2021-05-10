@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/bevgene/go-currency-rate/app/data"
 
-	currencyrate "github.com/bevgene/go-currency-rate/api"
+	currencyconverter "github.com/bevgene/go-currency-rate/api"
 	"github.com/bevgene/go-currency-rate/app/controllers"
 	"github.com/bevgene/go-currency-rate/app/services"
 	"github.com/bevgene/go-currency-rate/app/validations"
@@ -20,7 +20,7 @@ type workshopServiceDeps struct {
 	fx.In
 
 	// API Implementations, "Register" them as GRPCServiceAPI
-	CurrencyRateFetcher currencyrate.CurrencyRateFetcherServer
+	CurrencyRateFetcher currencyconverter.CurrencyConverterServer
 }
 
 func ServiceAPIsAndOtherDependenciesFxOption() fx.Option {
@@ -42,7 +42,7 @@ func ServiceAPIsAndOtherDependenciesFxOption() fx.Option {
 
 func serviceGRPCServiceAPIs(deps workshopServiceDeps) serverInt.GRPCServerAPI {
 	return func(srv *grpc.Server) {
-		currencyrate.RegisterCurrencyRateFetcherServer(srv, deps.CurrencyRateFetcher)
+		currencyconverter.RegisterCurrencyConverterServer(srv, deps.CurrencyRateFetcher)
 		// Any additional gRPC Implementations should be called here
 	}
 }
@@ -51,7 +51,7 @@ func serviceGRPCGatewayHandlers() []serverInt.GRPCGatewayGeneratedHandlers {
 	return []serverInt.GRPCGatewayGeneratedHandlers{
 		// Register service REST API
 		func(mux *runtime.ServeMux, localhostEndpoint string) error {
-			return currencyrate.RegisterCurrencyRateFetcherHandlerFromEndpoint(context.Background(), mux, localhostEndpoint, []grpc.DialOption{grpc.WithInsecure()})
+			return currencyconverter.RegisterCurrencyConverterHandlerFromEndpoint(context.Background(), mux, localhostEndpoint, []grpc.DialOption{grpc.WithInsecure()})
 		},
 		// Any additional gRPC gateway registrations should be called here
 	}

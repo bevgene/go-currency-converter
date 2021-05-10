@@ -1,0 +1,115 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api/currency_converter.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "CurrencyConverter"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/convert": {
+      "post": {
+        "operationId": "CurrencyConverter_Convert",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/currencyconverterConvertResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/currencyconverterConvertRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CurrencyConverter"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "currencyconverterConvertRequest": {
+      "type": "object",
+      "properties": {
+        "currencyFrom": {
+          "type": "string"
+        },
+        "currencyTo": {
+          "type": "string"
+        },
+        "amountFrom": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "currencyconverterConvertResponse": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "format": "float"
+        },
+        "correctnessTime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

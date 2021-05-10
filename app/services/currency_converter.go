@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	currencyrate "github.com/bevgene/go-currency-rate/api"
+	currencyconverter "github.com/bevgene/go-currency-rate/api"
 	"github.com/bevgene/go-currency-rate/app/controllers"
 	"github.com/bevgene/go-currency-rate/app/validations"
 	"github.com/go-masonry/mortar/interfaces/monitor"
@@ -23,21 +23,21 @@ type (
 	}
 
 	currencyRateServiceImpl struct {
-		currencyrate.UnimplementedCurrencyRateFetcherServer
+		currencyconverter.UnimplementedCurrencyConverterServer
 		deps currencyRateServiceImplDeps
 	}
 )
 
-func CreateCurrencyRateService(deps currencyRateServiceImplDeps) currencyrate.CurrencyRateFetcherServer {
+func CreateCurrencyRateService(deps currencyRateServiceImplDeps) currencyconverter.CurrencyConverterServer {
 	return &currencyRateServiceImpl{
 		deps: deps,
 	}
 }
 
-func (impl *currencyRateServiceImpl) GetCurrencyRate(ctx context.Context, req *currencyrate.GetCurrencyRateRequest) (res *currencyrate.GetCurrencyRateResponse, err error) {
+func (impl *currencyRateServiceImpl) GetCurrencyRate(ctx context.Context, req *currencyconverter.ConvertRequest) (res *currencyconverter.ConvertResponse, err error) {
 	if err = impl.deps.Validations.ValidateGetCurrencyRateRequest(ctx, req); err != nil {
 		impl.deps.Logger.WithError(err).WithField("request", req).Error(ctx, "validation failed")
 	}
 
-	return impl.deps.Controller.GetCurrencyRate(ctx, req)
+	return impl.deps.Controller.Convert(ctx, req)
 }

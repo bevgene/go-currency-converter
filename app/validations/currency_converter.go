@@ -7,14 +7,14 @@ import (
 	"google.golang.org/grpc/status"
 	"reflect"
 
-	currencyrate "github.com/bevgene/go-currency-rate/api"
+	currencyconverter "github.com/bevgene/go-currency-rate/api"
 	"github.com/go-masonry/mortar/interfaces/log"
 	"go.uber.org/fx"
 )
 
 type (
 	CurrencyRateValidations interface {
-		ValidateGetCurrencyRateRequest(ctx context.Context, request *currencyrate.GetCurrencyRateRequest) error
+		ValidateGetCurrencyRateRequest(ctx context.Context, request *currencyconverter.ConvertRequest) error
 	}
 
 	currencyRateValidationsImplDeps struct {
@@ -33,7 +33,7 @@ func CreateCurrencyRateValidations(deps currencyRateValidationsImplDeps) Currenc
 	}
 }
 
-func (impl *currencyRateValidationsImpl) ValidateGetCurrencyRateRequest(ctx context.Context, request *currencyrate.GetCurrencyRateRequest) (err error) {
+func (impl *currencyRateValidationsImpl) ValidateGetCurrencyRateRequest(ctx context.Context, request *currencyconverter.ConvertRequest) (err error) {
 	return combineErrors(
 		impl.notEmpty(ctx, request.GetCurrencyTo(), "currencyTo"),
 		impl.notEmpty(ctx, request.GetCurrencyFrom(), "currencyFrom"),

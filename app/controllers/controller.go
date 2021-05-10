@@ -5,7 +5,7 @@ import (
 	"github.com/bevgene/go-currency-rate/app/data"
 	"github.com/go-masonry/mortar/interfaces/cfg"
 
-	currencyrate "github.com/bevgene/go-currency-rate/api"
+	currencyconverter "github.com/bevgene/go-currency-rate/api"
 
 	"github.com/go-masonry/mortar/interfaces/log"
 	"go.uber.org/fx"
@@ -13,7 +13,7 @@ import (
 
 type (
 	CurrencyRateController interface {
-		currencyrate.CurrencyRateFetcherServer
+		currencyconverter.CurrencyConverterServer
 	}
 
 	currencyRateControllerImplDeps struct {
@@ -25,7 +25,7 @@ type (
 	}
 
 	currencyRateControllerImpl struct {
-		*currencyrate.UnimplementedCurrencyRateFetcherServer
+		*currencyconverter.UnimplementedCurrencyConverterServer
 		deps currencyRateControllerImplDeps
 	}
 )
@@ -36,6 +36,6 @@ func CreateCurrencyRateController(deps currencyRateControllerImplDeps) CurrencyR
 	}
 }
 
-func (impl *currencyRateControllerImpl) GetCurrencyRate(ctx context.Context, request *currencyrate.GetCurrencyRateRequest) (*currencyrate.GetCurrencyRateResponse, error) {
+func (impl *currencyRateControllerImpl) Convert(ctx context.Context, request *currencyconverter.ConvertRequest) (*currencyconverter.ConvertResponse, error) {
 	panic("implement me")
 }
