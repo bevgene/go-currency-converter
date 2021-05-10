@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package currencyconverter;
+
+import "google/api/annotations.proto";
+
+option go_package = "./;currencyconverter";
+
+service CurrencyConverter {
+    rpc Convert(ConvertRequest) returns (ConvertResponse) {
+        option (google.api.http) = {
+            post: "/v1/convert"
+            body: "*"
+        };
+    }
+}
+
+message ConvertRequest {
+    string currency_from = 1;
+    string currency_to = 2;
+    float amount_from = 3;
+}
+
+message ConvertResponse {
+    string currency = 1;
+    float amount = 2;
+    google.protobuf.Timestamp correctness_time = 3;
+}
+

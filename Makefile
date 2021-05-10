@@ -13,7 +13,7 @@ run:
 	@go run -ldflags="-X ${VER} -X ${GIT} -X ${BUILD_TAG} -X ${BUILD_TS}" main.go config config/config.yml
 
 gen-api:
-	@protoc -I . \
+	@protoc -I.\
 		-I ./third_party/googleapis \
         --go_out=:api \
 		--go-grpc_out=:api \
@@ -31,4 +31,9 @@ go-install-deps:
 test:
 	@go test -failfast -cover ./...
 
-.PHONY: gen-api test run go-install-deps
+go-generate:
+	@echo -n Generating files...
+	@go generate ./...
+	@echo " done"
+
+.PHONY: gen-api test run go-install-deps go-generate

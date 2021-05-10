@@ -1,8 +1,19 @@
-# Mortar service template
+# Go currency rate
 
-This is a gRPC web service [template](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) using [Mortar](https://github.com/go-masonry/mortar)
+This is a gRPC web service using [Mortar](https://github.com/go-masonry/mortar)
+Its main purpose is to show how easy it is for one to create a gRPC web service combined with [Temporal](https://temporal.io/) orchestrator to achieve reliable service that depends on other external APIs.
 
-For documentations and internals [read here](https://go-masonry.github.io)
+## Plan of work
+
+* on hourly base, connect to currency exchange api and fetch rates for predefined currencies
+* store the fetched rates in DB (MongoDB)
+* expose two endpoints:
+  * get history of requested currency
+  * get current rate of requested currency
+
+** More details:
+
+* The hourly connection will be done using Temporal.io workflow 
 
 ## First steps
 

@@ -2,11 +2,12 @@ package mortar
 
 import (
 	"context"
+	"github.com/bevgene/go-currency-rate/app/data"
 
-	helloworld "github.com/go-masonry/mortar-template/api"
-	"github.com/go-masonry/mortar-template/app/controllers"
-	"github.com/go-masonry/mortar-template/app/services"
-	"github.com/go-masonry/mortar-template/app/validations"
+	currencyrate "github.com/bevgene/go-currency-rate/api"
+	"github.com/bevgene/go-currency-rate/app/controllers"
+	"github.com/bevgene/go-currency-rate/app/services"
+	"github.com/bevgene/go-currency-rate/app/validations"
 	serverInt "github.com/go-masonry/mortar/interfaces/http/server"
 	"github.com/go-masonry/mortar/providers/groups"
 
@@ -19,7 +20,7 @@ type workshopServiceDeps struct {
 	fx.In
 
 	// API Implementations, "Register" them as GRPCServiceAPI
-	Helloworld helloworld.GreeterServer
+	CurrencyRateFetcher currencyrate.CurrencyRateFetcherServer
 }
 
 func ServiceAPIsAndOtherDependenciesFxOption() fx.Option {
@@ -41,7 +42,7 @@ func ServiceAPIsAndOtherDependenciesFxOption() fx.Option {
 
 func serviceGRPCServiceAPIs(deps workshopServiceDeps) serverInt.GRPCServerAPI {
 	return func(srv *grpc.Server) {
-		helloworld.RegisterGreeterServer(srv, deps.Helloworld)
+		currencyrate.RegisterCurrencyRateFetcherServer(srv, deps.CurrencyRateFetcher)
 		// Any additional gRPC Implementations should be called here
 	}
 }
@@ -50,7 +51,7 @@ func serviceGRPCGatewayHandlers() []serverInt.GRPCGatewayGeneratedHandlers {
 	return []serverInt.GRPCGatewayGeneratedHandlers{
 		// Register service REST API
 		func(mux *runtime.ServeMux, localhostEndpoint string) error {
-			return helloworld.RegisterGreeterHandlerFromEndpoint(context.Background(), mux, localhostEndpoint, []grpc.DialOption{grpc.WithInsecure()})
+			return currencyrate.RegisterCurrencyRateFetcherHandlerFromEndpoint(context.Background(), mux, localhostEndpoint, []grpc.DialOption{grpc.WithInsecure()})
 		},
 		// Any additional gRPC gateway registrations should be called here
 	}
@@ -58,8 +59,9 @@ func serviceGRPCGatewayHandlers() []serverInt.GRPCGatewayGeneratedHandlers {
 
 func serviceDependencies() fx.Option {
 	return fx.Provide(
-		services.CreateHelloworldService,
-		controllers.CreateHelloworldController,
-		validations.CreateHelloworldValidations,
+		services.CreateCurrencyRateService,
+		controllers.CreateCurrencyRateController,
+		validations.CreateCurrencyRateValidations,
+		data.CreateCurrencyRateDao,
 	)
 }

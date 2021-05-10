@@ -2,37 +2,40 @@ package controllers
 
 import (
 	"context"
+	"github.com/bevgene/go-currency-rate/app/data"
+	"github.com/go-masonry/mortar/interfaces/cfg"
 
-	helloworld "github.com/go-masonry/mortar-template/api"
+	currencyrate "github.com/bevgene/go-currency-rate/api"
 
 	"github.com/go-masonry/mortar/interfaces/log"
 	"go.uber.org/fx"
 )
 
-type HelloWorldController interface {
-	helloworld.GreeterServer
-}
+type (
+	CurrencyRateController interface {
+		currencyrate.CurrencyRateFetcherServer
+	}
 
-type helloworldControllerDeps struct {
-	fx.In
+	currencyRateControllerImplDeps struct {
+		fx.In
 
-	Logger log.Logger
-}
+		Logger          log.Logger
+		Config          cfg.Config
+		CurrencyRateDao data.CurrencyRateDao
+	}
 
-type helloworldControllerImpl struct {
-	*helloworld.UnimplementedGreeterServer // if keep this one added even when you change your interface this code will compile
-	deps                                   helloworldControllerDeps
-}
+	currencyRateControllerImpl struct {
+		*currencyrate.UnimplementedCurrencyRateFetcherServer
+		deps currencyRateControllerImplDeps
+	}
+)
 
-func CreateHelloworldController(deps helloworldControllerDeps) HelloWorldController {
-	return &helloworldControllerImpl{
+func CreateCurrencyRateController(deps currencyRateControllerImplDeps) CurrencyRateController {
+	return &currencyRateControllerImpl{
 		deps: deps,
 	}
 }
 
-func (w *helloworldControllerImpl) SayHello(ctx context.Context, req *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
-	w.deps.Logger.Debug(ctx, "saying hello to %s", req.GetName())
-	return &helloworld.HelloReply{
-		Message: "Hello " + req.GetName(),
-	}, nil
+func (impl *currencyRateControllerImpl) GetCurrencyRate(ctx context.Context, request *currencyrate.GetCurrencyRateRequest) (*currencyrate.GetCurrencyRateResponse, error) {
+	panic("implement me")
 }

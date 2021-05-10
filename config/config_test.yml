@@ -1,5 +1,5 @@
 mortar:
-  name: "tutorial_test"
+  name: "exchange_rate_test"
   logger:
     level: info
     console: true

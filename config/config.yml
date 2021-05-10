@@ -2,7 +2,7 @@
 mortar:
   # Application/Project name
   # Type: string
-  name: "greeter"
+  name: "exchange_rate"
   # Web server related configuration
   server:
     grpc:
@@ -39,7 +39,7 @@ mortar:
   monitor:
     # sets the namespace/prefix of every metric. Depends on the Metrics implementation
     # Type: string
-    prefix: "greeter"
+    prefix: "exchange_rate"
     # allows to include static labels/tags to every published metric
     # Type: map[string]string
     tags:
@@ -98,6 +98,20 @@ mortar:
         - "authorization"
 
 # This service configuration should be here
-server:
+exchangerate:
   logger:
-    console: true
+    console: false
+  exchange:
+    apiKey: ""
+    url: ""
+  database:
+    host: ""
+    port: ""
+    user: ""
+    password: ""
+    name: ""
+    collection: ""
+  temporal:
+    hostPort: ""
+    namespace: ""
+    workflowName: ""

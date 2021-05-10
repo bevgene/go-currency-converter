@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/alecthomas/kong"
-	"github.com/go-masonry/mortar-template/app/mortar"
+	"github.com/bevgene/go-currency-rate/app/mortar"
 	"github.com/go-masonry/mortar/providers"
 	"go.uber.org/fx"
 )
@@ -36,8 +36,11 @@ func createApplication(configFilePath string, additionalFiles []string) *fx.App 
 		mortar.HttpServerFxOptions(),
 		mortar.AuthFxOptions(),
 		mortar.InternalHttpHandlersFxOptions(),
-		// Tutorial service dependencies
+		// service dependencies
 		mortar.ServiceAPIsAndOtherDependenciesFxOption(), // register tutorial APIs
+		// Other dependencies
+		mortar.ExchangeFxOptions(),
+		mortar.TemporalFxOptions(),
 		// This one invokes all the above
 		providers.BuildMortarWebServiceFxOption(), // http server invoker
 	)
