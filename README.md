@@ -14,7 +14,7 @@ In general, this service could be divided into two:
 
 Having said that, since there is not much code anyway, the above two functionalities are merged into one service that 
 resides in this repository.
-[[_TOC_]]
+
 
 ## High level architecture
 
