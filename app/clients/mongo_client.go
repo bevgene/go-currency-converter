@@ -13,6 +13,8 @@ import (
 	"net"
 )
 
+//go:generate mockgen -source=mongo_client.go -destination=mock/mongo_client_mock.go
+
 type (
 	mongoClientImplDeps struct {
 		fx.In

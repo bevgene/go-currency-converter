@@ -6,6 +6,7 @@ package mock_clients
 
 import (
 	context "context"
+	model "github.com/bevgene/go-currency-rate/app/model"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -33,17 +34,17 @@ func (m *MockExchangeClient) EXPECT() *MockExchangeClientMockRecorder {
 	return m.recorder
 }
 
-// GetRate mocks base method
-func (m *MockExchangeClient) GetRate(arg0 context.Context, arg1, arg2 string) (float32, error) {
+// GetRates mocks base method
+func (m *MockExchangeClient) GetRates(arg0 context.Context) (*model.ExchangeRatesModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRate", arg0, arg1, arg2)
-	ret0, _ := ret[0].(float32)
+	ret := m.ctrl.Call(m, "GetRates", arg0)
+	ret0, _ := ret[0].(*model.ExchangeRatesModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetRate indicates an expected call of GetRate
-func (mr *MockExchangeClientMockRecorder) GetRate(arg0, arg1, arg2 interface{}) *gomock.Call {
+// GetRates indicates an expected call of GetRates
+func (mr *MockExchangeClientMockRecorder) GetRates(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRate", reflect.TypeOf((*MockExchangeClient)(nil).GetRate), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRates", reflect.TypeOf((*MockExchangeClient)(nil).GetRates), arg0)
 }
