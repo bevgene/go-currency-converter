@@ -7,11 +7,12 @@ type ExchangeRatesModel struct {
 	Date      string             `json:"date"`
 	Base      string             `json:"base"`
 	Timestamp int64              `json:"timestamp"`
-	Rates     map[string]float64 `json:"rates"`
+	Rates     map[string]float32 `json:"rates"`
 }
 
 type ExchangeRateDocument struct {
-	Rates     map[string]float64 `bson:"rates"`
+	Base      string             `bson:"base"`
+	Rates     map[string]float32 `bson:"rates"`
 	CreatedAt time.Time          `bson:"created_at"`
 }
 

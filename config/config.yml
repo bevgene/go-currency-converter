@@ -103,7 +103,8 @@ exchangerate:
     console: false
   exchange:
     apiKey: ""
-    url: ""
+    url: "http://data.fixer.io/api/latest"
+    timeout: "30s"
   database:
     host: ""
     port: ""

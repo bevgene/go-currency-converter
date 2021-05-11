@@ -36,6 +36,6 @@ func (impl *UpdateRatesWorkflow) UpdateRates(ctx workflow.Context) (err error) {
 
 	document := model.ConvertExchangeRatesModel(rates)
 
-	err = workflow.ExecuteActivity(ctx, impl.deps.ExchangeActivities.UpdateRates, document).Get(ctx, nil)
+	err = workflow.ExecuteActivity(ctx, impl.deps.ExchangeActivities.UpdateRates, &document).Get(ctx, nil)
 	return
 }
