@@ -34,7 +34,7 @@ func CreateCurrencyRateService(deps currencyRateServiceImplDeps) currencyconvert
 	}
 }
 
-func (impl *currencyRateServiceImpl) GetCurrencyRate(ctx context.Context, req *currencyconverter.ConvertRequest) (res *currencyconverter.ConvertResponse, err error) {
+func (impl *currencyRateServiceImpl) Convert(ctx context.Context, req *currencyconverter.ConvertRequest) (res *currencyconverter.ConvertResponse, err error) {
 	if err = impl.deps.Validations.ValidateGetCurrencyRateRequest(ctx, req); err != nil {
 		impl.deps.Logger.WithError(err).WithField("request", req).Error(ctx, "validation failed")
 	}

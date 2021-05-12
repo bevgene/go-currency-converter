@@ -14,8 +14,6 @@ import (
 	"time"
 )
 
-//go:generate mockgen -source=temporal_client.go -destination=mock/temporal_client_mock.go
-
 type (
 	temporalClientDeps struct {
 		fx.In

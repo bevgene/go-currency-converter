@@ -41,6 +41,7 @@ func createApplication(configFilePath string, additionalFiles []string) *fx.App 
 		// Other dependencies
 		mortar.ExchangeFxOptions(),
 		mortar.TemporalFxOptions(),
+		mortar.MongoFxOptions(),
 		// This one invokes all the above
 		providers.BuildMortarWebServiceFxOption(), // http server invoker
 	)
