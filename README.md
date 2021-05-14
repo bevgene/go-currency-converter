@@ -88,7 +88,9 @@ This should bring up the following services
   
 ![jaeger-convert](images/jaeger-convert.png)
 
-* [Prometheus](http://localhost:9090) and [Grafana](http://localhost:3000) can be sued to visualize reported metrics.
-Since Mortar provides built-in metrics reports, one can enjoy it out of the box:
+* [Prometheus](http://localhost:9090) and [Grafana](http://localhost:3000) can be used to visualize reported metrics.
+Since Mortar provides built-in metrics reports, one can enjoy it out of the box (in addition to metrics that are provided by Temporal.io as well):
   
 ![grafana](images/grafana.png)
+
+![grafana-temporal](images/grafana-temporal.png)
