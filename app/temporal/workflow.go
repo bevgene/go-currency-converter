@@ -29,8 +29,6 @@ func CreateUpdateRatesWorkflow(deps updateRatesWorkflowDeps) *UpdateRatesWorkflo
 	}
 }
 
-// UpdateRatesWorkflow executes on the given schedule
-// The schedule is provided when starting the workflow
 func (impl *UpdateRatesWorkflow) UpdateRates(ctx workflow.Context) (err error) {
 	workflow.GetLogger(ctx).Info("Cron workflow started.", "StartTime", workflow.Now(ctx))
 	activityOptions := workflow.ActivityOptions{
@@ -51,5 +49,6 @@ func (impl *UpdateRatesWorkflow) UpdateRates(ctx workflow.Context) (err error) {
 		workflow.GetLogger(ctx).Error("Cron job failed.", "Error", err)
 
 	}
+	workflow.GetLogger(ctx).Info("Cron workflow finished.", "FinishTime", workflow.Now(ctx))
 	return
 }
