@@ -43,7 +43,7 @@ mortar:
     # allows to include static labels/tags to every published metric
     # Type: map[string]string
     tags:
-      service: greeter
+      service: exchangerate
   # Bundled handlers configuration
   handlers:
     config:

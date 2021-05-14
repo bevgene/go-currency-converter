@@ -53,3 +53,42 @@ That's it - you have all dependencies running locally, now you can run the servi
 ```bash
 make run
 ```
+
+### Examples:
+
+Once the service is up and running, you can start using it.
+Example for getting conversion rate of 300 EUR to ILS:
+```shell script
+curl -X "POST" "http://localhost:5381/v1/convert" \                                                                                                                                                                                                                 10060
+     -H 'Content-Type: application/json; charset=utf-8' \
+     -d $'{"currency_from": "EUR", "currency_to": "ILS", "amount_from": 300}'
+
+{"currency":"ILS","amount":1189.4362,"correctnessTime":"2021-05-14T10:06:14Z"}     
+```
+
+
+### Metrics and monitoring
+
+Since Mortar comes with a built-in ability to report metrics, it's very easy to demonstrate it with this service.
+In **docker** directory you can find all necessary files to run locally Graphana/Jaeger/Prometheus images.
+
+> Open a shell, change directory to `go-currency-converter/docker` now run the following
+```shell script
+docker-compose up
+``` 
+
+This should bring up the following services
+
+* [Prometheus](http://localhost:9090)
+* [Jaeger](http://localhost:16686)
+* [Grafana](http://localhost:3000)
+
+* [Jaeger](http://localhost:16686) can show you all requests that you've made to the service or all requests that had been performed by Temporal cron service.
+![jaeger](images/jaeger.png)
+  
+![jaeger-convert](images/jaeger-convert.png)
+
+* [Prometheus](http://localhost:9090) and [Grafana](http://localhost:3000) can be sued to visualize reported metrics.
+Since Mortar provides built-in metrics reports, one can enjoy it out of the box:
+  
+![grafana](images/grafana.png)
