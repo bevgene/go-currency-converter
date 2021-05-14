@@ -16,8 +16,11 @@ type ExchangeRateDocument struct {
 	CreatedAt time.Time          `bson:"created_at"`
 }
 
-func ConvertExchangeRatesModel(model ExchangeRatesModel) (result ExchangeRateDocument) {
-	result.Rates = model.Rates
-	result.CreatedAt = time.Unix(model.Timestamp, 0)
+func ConvertExchangeRatesModel(model ExchangeRatesModel) (result *ExchangeRateDocument) {
+	result = &ExchangeRateDocument{
+		Base:      model.Base,
+		Rates:     model.Rates,
+		CreatedAt: time.Unix(model.Timestamp, 0),
+	}
 	return
 }

@@ -17,10 +17,10 @@ type (
 	currencyRateDaoImplDeps struct {
 		fx.In
 
-		Logger      log.Logger
-		Config      cfg.Config
-		Lifecycle   fx.Lifecycle
-		MongoClient clients.MongoClient
+		Logger          log.Logger
+		Config          cfg.Config
+		Lifecycle       fx.Lifecycle
+		LazyMongoClient *clients.LazyMongoClient
 	}
 
 	currencyRateDaoImpl struct {
@@ -36,5 +36,5 @@ func CreateCurrencyRateDao(deps currencyRateDaoImplDeps) (result CurrencyRateDao
 }
 
 func (impl *currencyRateDaoImpl) GetRates(ctx context.Context) (*model.ExchangeRateDocument, error) {
-	return impl.deps.MongoClient.GetLatestRateDocument(ctx)
+	return impl.deps.LazyMongoClient.Client.GetLatestRateDocument(ctx)
 }

@@ -21,21 +21,20 @@ type (
 		Config              cfg.Config
 		Logger              log.Logger
 		Lifecycle           fx.Lifecycle
-		UpdateRatesWorkflow UpdateRatesWorkflow
-		ExchangeActivities  ExchangeActivities
+		UpdateRatesWorkflow *UpdateRatesWorkflow
+		ExchangeActivities  *ExchangeActivities
+	}
+
+	CronWorker struct {
+		deps workerDeps
 	}
 )
 
-const (
-	queueNameKey            = "exchangerate.temporal.queue"
-	maxConcurrentWorkersKey = "exchangerate.temporal.maxConcurrentWorkers"
-)
-
 func CreateWorker(deps workerDeps) error {
-	var cronWorker worker.Worker
+	var cronWorker = new(LazyWorker)
 
 	deps.Lifecycle.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
+		OnStart: func(ctx context.Context) (startErr error) {
 			deps.Logger.Info(ctx, "Registering Temporal cron workers")
 			if deps.LazyTemporalClient == nil {
 				return fmt.Errorf("temporal client wasn't created")
@@ -43,18 +42,26 @@ func CreateWorker(deps workerDeps) error {
 			queueName := deps.Config.Get(queueNameKey).String()
 			maxConcurrentWorkers := deps.Config.Get(maxConcurrentWorkersKey).Int()
 
-			cronWorker = worker.New(deps.LazyTemporalClient, queueName, worker.Options{
+			worker := worker.New(deps.LazyTemporalClient.Client, queueName, worker.Options{
 				MaxConcurrentActivityExecutionSize:     maxConcurrentWorkers,
 				MaxConcurrentWorkflowTaskExecutionSize: maxConcurrentWorkers,
 			})
-			cronWorker.RegisterWorkflow(deps.UpdateRatesWorkflow)
-			cronWorker.RegisterActivity(deps.ExchangeActivities)
+			worker.RegisterWorkflow(deps.UpdateRatesWorkflow.UpdateRates)
+			worker.RegisterActivity(deps.ExchangeActivities.GetRates)
+			worker.RegisterActivity(deps.ExchangeActivities.UpdateRates)
 
-			err := cronWorker.Start()
-			return err
+			if startErr = worker.Start(); startErr != nil {
+				return
+			}
+			cronWorker.workers = append(cronWorker.workers, worker)
+			return
 		},
 		OnStop: func(ctx context.Context) error {
-			cronWorker.Stop()
+			for _, registeredWorker := range cronWorker.workers {
+				if registeredWorker != nil {
+					registeredWorker.Stop()
+				}
+			}
 			return nil
 		},
 	})

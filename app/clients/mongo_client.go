@@ -24,9 +24,14 @@ type (
 		Lifecycle fx.Lifecycle
 	}
 
+	LazyMongoClient struct {
+		Client MongoClient
+	}
+
 	MongoClient interface {
 		AddRateDocument(context.Context, *model.ExchangeRateDocument) error
 		GetLatestRateDocument(context.Context) (*model.ExchangeRateDocument, error)
+		Disconnect(ctx context.Context) error
 	}
 
 	mongoClientImpl struct {
@@ -46,7 +51,7 @@ const (
 	collectionKey = "exchangerate.database.collection"
 )
 
-func CreateMongoClient(deps mongoClientImplDeps) (result MongoClient, err error) {
+func CreateMongoClient(deps mongoClientImplDeps) (result *LazyMongoClient, err error) {
 	appName := deps.Config.Get(appNameKey).String()
 	dbName := deps.Config.Get(databaseKey).String()
 	host := deps.Config.Get(hostKey).String()
@@ -60,6 +65,7 @@ func CreateMongoClient(deps mongoClientImplDeps) (result MongoClient, err error)
 		uri = fmt.Sprintf("mongodb://%s:%s@%s/%s", userName, password, net.JoinHostPort(host, port), dbName)
 	}
 	clientOptions := options.Client().ApplyURI(uri).SetAppName(appName)
+	var clientPtr = new(LazyMongoClient)
 	var mongoClient *mongo.Client
 	var collection *mongo.Collection
 	deps.Lifecycle.Append(fx.Hook{
@@ -77,28 +83,33 @@ func CreateMongoClient(deps mongoClientImplDeps) (result MongoClient, err error)
 				Options: options.Index().SetUnique(true),
 			}
 
-			_, startError = collection.Indexes().CreateOne(ctx, indexModel)
+			if _, startError = collection.Indexes().CreateOne(ctx, indexModel); startError != nil {
+				return
+			}
+
+			clientPtr.Client = &mongoClientImpl{
+				deps:       deps,
+				client:     mongoClient,
+				collection: collection,
+			}
 			return
 		},
 		OnStop: func(ctx context.Context) (stopError error) {
-			if mongoClient != nil {
-				if stopError = mongoClient.Disconnect(ctx); stopError != nil {
+			if clientPtr.Client != nil {
+				if stopError = clientPtr.Client.Disconnect(ctx); stopError != nil {
 					deps.Logger.WithError(stopError).Error(ctx, "failed to disconnect from mongo db")
 				}
 			}
 			return
 		},
 	})
-	result = &mongoClientImpl{
-		deps:       deps,
-		client:     mongoClient,
-		collection: collection,
-	}
+	result = clientPtr
 	return
 }
 
 func (impl *mongoClientImpl) AddRateDocument(ctx context.Context, document *model.ExchangeRateDocument) (err error) {
 	_, err = impl.collection.InsertOne(ctx, document)
+	impl.deps.Logger.WithError(err).WithField("document", document).Error(ctx, "add rate document")
 	return
 }
 
@@ -112,4 +123,8 @@ func (impl *mongoClientImpl) GetLatestRateDocument(ctx context.Context) (result 
 	}
 	result = &doc
 	return
+}
+
+func (impl *mongoClientImpl) Disconnect(ctx context.Context) error {
+	return impl.client.Disconnect(ctx)
 }

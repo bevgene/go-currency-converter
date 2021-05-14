@@ -11,7 +11,7 @@ import (
 	reflect "reflect"
 )
 
-// MockMongoClient is a mock of MongoClient interface
+// MockMongoClient is a mock of LazyMongoClient interface
 type MockMongoClient struct {
 	ctrl     *gomock.Controller
 	recorder *MockMongoClientMockRecorder
@@ -61,4 +61,18 @@ func (m *MockMongoClient) GetLatestRateDocument(arg0 context.Context) (*model.Ex
 func (mr *MockMongoClientMockRecorder) GetLatestRateDocument(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestRateDocument", reflect.TypeOf((*MockMongoClient)(nil).GetLatestRateDocument), arg0)
+}
+
+// Disconnect mocks base method
+func (m *MockMongoClient) Disconnect(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Disconnect", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Disconnect indicates an expected call of Disconnect
+func (mr *MockMongoClientMockRecorder) Disconnect(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Disconnect", reflect.TypeOf((*MockMongoClient)(nil).Disconnect), ctx)
 }

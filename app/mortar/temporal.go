@@ -10,11 +10,12 @@ func TemporalFxOptions() fx.Option {
 	return fx.Options(
 		fx.Provide(
 			clients.CreateTemporalClient,
+		),
+		fx.Invoke(temporal.CreateWorker),
+		fx.Invoke(temporal.CreateCronStarter),
+		fx.Provide(
 			temporal.CreateUpdateRatesWorkflow,
 			temporal.CreateActivities,
-			temporal.CreateWorker,
-			temporal.CreateCronStarter,
 		),
-		fx.Provide(),
 	)
 }

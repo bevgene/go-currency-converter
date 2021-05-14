@@ -106,13 +106,26 @@ exchangerate:
     url: "http://data.fixer.io/api/latest"
     timeout: "30s"
   database:
-    host: ""
-    port: ""
+    host: "localhost"
+    port: "27017"
     user: ""
     password: ""
-    name: ""
-    collection: ""
+    name: "currencyconverter"
+    collection: "rates"
   temporal:
-    hostPort: ""
-    namespace: ""
-    workflowName: ""
+    hostPort: "localhost:7233"
+    namespace: "default"
+    workflowName: "update_rates"
+    queue: "exchangerate"
+    maxConcurrentWorkers: "4"
+    # The cron spec is as following:
+    # ┌───────────── minute (0 - 59)
+    # │ ┌───────────── hour (0 - 23)
+    # │ │ ┌───────────── day of the month (1 - 31)
+    # │ │ │ ┌───────────── month (1 - 12)
+    # │ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday)
+    # │ │ │ │ │
+    # │ │ │ │ │
+    # * * * * *
+    # currently set to a hourly base:
+    cronSchedule: "0 * * * *"

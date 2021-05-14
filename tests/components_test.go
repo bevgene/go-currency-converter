@@ -60,6 +60,7 @@ func (impl *componentTestSuite) SetupTest() {
 			mock_clients.NewMockExchangeClient,
 			CreateExchangeClientMock,
 			CreateMongoClientMock,
+			CreateLazyMongoClient,
 			GetRatesDocument,
 		),
 		providers.BuildMortarWebServiceFxOption(),
@@ -91,7 +92,6 @@ func (impl *componentTestSuite) TestConvert() {
 func (impl *componentTestSuite) happyConvert(t *testing.T) gopter.Prop {
 	return prop.ForAll(
 		func(request *currencyconverter.ConvertRequest) bool {
-			impl.deps.Logger.WithField("request", request).Info(impl.deps.Ctx, "got request")
 			var response *currencyconverter.ConvertResponse
 			var err error
 			impl.deps.MockMongoClient.EXPECT().GetLatestRateDocument(gomock.Any()).Return(impl.deps.ExpectedRates, nil)

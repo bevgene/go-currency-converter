@@ -55,6 +55,12 @@ func CreateMongoClientMock(mock *mock_clients.MockMongoClient) clients.MongoClie
 	return mock
 }
 
+func CreateLazyMongoClient(mock *mock_clients.MockMongoClient) *clients.LazyMongoClient {
+	lazyClient := new(clients.LazyMongoClient)
+	lazyClient.Client = mock
+	return lazyClient
+}
+
 func CreateCurrencyConverterClient(deps currencyConverterClientImplDeps) CurrencyConverterClient {
 	httpClient := deps.HTTPClientBuilder().Build()
 	return &currencyConverterClientImpl{

@@ -62,6 +62,7 @@ func CreateTemporalClient(deps temporalClientDeps) *LazyClient {
 			deps.Logger.Info(ctx, "Starting Temporal Client...")
 			var newClient client.Client
 			if newClient, err = client.NewClient(options); err != nil {
+				deps.Logger.WithError(err).Error(ctx, "failed creating client")
 				return
 			}
 			clientPtr.Client = newClient

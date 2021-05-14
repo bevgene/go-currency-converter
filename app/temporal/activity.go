@@ -11,8 +11,8 @@ type (
 	activityDeps struct {
 		fx.In
 
-		ExchangeClient clients.ExchangeClient
-		MongoClient    clients.MongoClient
+		ExchangeClient  clients.ExchangeClient
+		LazyMongoClient *clients.LazyMongoClient
 	}
 
 	ExchangeActivities struct {
@@ -20,8 +20,8 @@ type (
 	}
 )
 
-func CreateActivities(deps activityDeps) ExchangeActivities {
-	return ExchangeActivities{
+func CreateActivities(deps activityDeps) *ExchangeActivities {
+	return &ExchangeActivities{
 		deps: deps,
 	}
 }
@@ -31,5 +31,5 @@ func (impl *ExchangeActivities) GetRates(ctx context.Context) (result *model.Exc
 }
 
 func (impl *ExchangeActivities) UpdateRates(ctx context.Context, doc *model.ExchangeRateDocument) error {
-	return impl.deps.MongoClient.AddRateDocument(ctx, doc)
+	return impl.deps.LazyMongoClient.Client.AddRateDocument(ctx, doc)
 }

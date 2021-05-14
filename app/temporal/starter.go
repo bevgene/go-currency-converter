@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/bevgene/go-currency-rate/app/clients"
 	"github.com/go-masonry/mortar/interfaces/cfg"
-	"github.com/pborman/uuid"
+	"github.com/go-masonry/mortar/interfaces/log"
 	"go.temporal.io/sdk/client"
 	"go.uber.org/fx"
 )
@@ -16,8 +16,9 @@ type (
 
 		Lifecycle           fx.Lifecycle
 		Config              cfg.Config
-		TemporalClient      clients.LazyClient
-		UpdateRatesWorkflow UpdateRatesWorkflow
+		Logger              log.Logger
+		TemporalClient      *clients.LazyClient
+		UpdateRatesWorkflow *UpdateRatesWorkflow
 	}
 
 	CronStarter struct {
@@ -27,35 +28,30 @@ type (
 	}
 )
 
-func CreateCronStarter(deps cronStarterDeps) (CronStarter, error) {
-	cronStarter := CronStarter{
+func CreateCronStarter(deps cronStarterDeps) error {
+	cronStarter := &CronStarter{
 		deps: deps,
 	}
 
 	deps.Lifecycle.Append(fx.Hook{
 		OnStart: func(ctx context.Context) (err error) {
-			workflowID := fmt.Sprintf("cron_%s", uuid.New())
+			workflowName := deps.Config.Get(workflowNameKey).String()
+			workflowID := fmt.Sprintf("cron_%s", workflowName)
+			queueName := deps.Config.Get(queueNameKey).String()
+			cronSchedule := deps.Config.Get(cronScheduleKey).String()
 			workflowOptions := client.StartWorkflowOptions{
-				ID:        workflowID,
-				TaskQueue: "cron",
-				// The cron spec is as following:
-				// ┌───────────── minute (0 - 59)
-				// │ ┌───────────── hour (0 - 23)
-				// │ │ ┌───────────── day of the month (1 - 31)
-				// │ │ │ ┌───────────── month (1 - 12)
-				// │ │ │ │ ┌───────────── day of the week (0 - 6) (Sunday to Saturday)
-				// │ │ │ │ │
-				// │ │ │ │ │
-				// * * * * *
-
-				CronSchedule: "* * * * *", // every 1 minute
+				ID:           workflowID,
+				TaskQueue:    queueName,
+				CronSchedule: cronSchedule,
 			}
 			var workflowRun client.WorkflowRun
 			if workflowRun, err = cronStarter.deps.TemporalClient.Client.ExecuteWorkflow(context.Background(), workflowOptions, deps.UpdateRatesWorkflow.UpdateRates); err != nil {
+				deps.Logger.WithError(err).Error(ctx, "failed workflow execution")
 				return
 			}
 			cronStarter.WorkflowID = workflowRun.GetID()
 			cronStarter.RunID = workflowRun.GetRunID()
+			deps.Logger.WithField("workflow id", cronStarter.WorkflowID).WithField("run_id", cronStarter.RunID).Info(ctx, "starter started workflow")
 			return
 		},
 		OnStop: func(ctx context.Context) (err error) {
@@ -65,5 +61,5 @@ func CreateCronStarter(deps cronStarterDeps) (CronStarter, error) {
 			return
 		},
 	})
-	return cronStarter, nil
+	return nil
 }
